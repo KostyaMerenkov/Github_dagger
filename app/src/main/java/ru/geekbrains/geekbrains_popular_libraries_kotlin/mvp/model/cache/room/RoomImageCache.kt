@@ -11,13 +11,15 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.security.MessageDigest
+import javax.inject.Inject
 
-class RoomImageCache(val db: Database, val dir: File) : IImageCache {
+class RoomImageCache(val database: Database, val dir: File) : IImageCache {
+
     private fun String.md5() = hash("MD5")
     private fun String.hash(algorithm: String) = MessageDigest.getInstance(algorithm).digest(toByteArray()).fold("", { str, it -> "%02x".format(it) })
 
     override fun getBytes(url: String) = Maybe.fromCallable {
-        db.imageDao.findByUrl(url)?.let {
+        database.imageDao.findByUrl(url)?.let {
             File(it.localPath).inputStream().readBytes()
         }
     }.subscribeOn(Schedulers.io())
@@ -37,14 +39,14 @@ class RoomImageCache(val db: Database, val dir: File) : IImageCache {
         } catch (e: Exception) {
             emitter.onError(e)
         }
-        db.imageDao.insert(RoomCachedImage(url, imageFile.path))
+        database.imageDao.insert(RoomCachedImage(url, imageFile.path))
         emitter.onComplete()
     }.subscribeOn(Schedulers.io())
 
-    override fun contains(url: String) = Single.fromCallable { db.imageDao.findByUrl(url) != null }.subscribeOn(Schedulers.io())
+    override fun contains(url: String) = Single.fromCallable { database.imageDao.findByUrl(url) != null }.subscribeOn(Schedulers.io())
 
     override fun clear() = Completable.fromAction {
-        db.imageDao.clear()
+        database.imageDao.clear()
         dir.deleteRecursively()
     }.subscribeOn(Schedulers.io())
 

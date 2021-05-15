@@ -8,6 +8,7 @@ import ru.geekbrains.geekbrains_popular_libraries_kotlin.mvp.presenter.Repositor
 import ru.geekbrains.geekbrains_popular_libraries_kotlin.mvp.presenter.UserPresenter
 import ru.geekbrains.geekbrains_popular_libraries_kotlin.mvp.presenter.UsersPresenter
 import ru.geekbrains.geekbrains_popular_libraries_kotlin.ui.activity.MainActivity
+import ru.geekbrains.geekbrains_popular_libraries_kotlin.ui.adapter.UsersRVAdapter
 import javax.inject.Singleton
 
 
@@ -28,4 +29,5 @@ interface AppComponent {
     fun inject(usersPresenter: UsersPresenter)
     fun inject(userPresenter: UserPresenter)
     fun inject(repositoryPresenter: RepositoryPresenter)
+    fun inject(usersRVAdapter: UsersRVAdapter)
 }
